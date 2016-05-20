@@ -28,7 +28,7 @@ public class KafkaProducerConsumerDemo {
         Runtime.getRuntime().addShutdownHook(new Thread(){
             @Override
             public void run() {
-                System.out.println("consumer shutdown hook executed...");
+                System.out.println("KafkaProducerConsumerDemo shutdown hook executed...");
             }
         });
     }

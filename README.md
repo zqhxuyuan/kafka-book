@@ -3,7 +3,7 @@
 ## HOW TO RUN
 
 ```
-➜  git clone
+➜  git clone https://github.com/zqhxuyuan/kafka-book.git
 ➜  cd kafka-book
 ➜  mvn clean compile exec:java -Dexec.mainClass="kafka.examples.KafkaProducerConsumerDemo"
 ```
