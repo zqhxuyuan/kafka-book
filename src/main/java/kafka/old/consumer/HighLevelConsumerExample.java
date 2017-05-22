@@ -30,6 +30,7 @@ public class HighLevelConsumerExample {
         Map<String, Integer> topicCountMap = new HashMap<String, Integer>();
         topicCountMap.put(topic, new Integer(a_numThreads)); // 描述读取哪个topic，需要几个线程读
         Map<String, List<KafkaStream<byte[], byte[]>>> consumerMap = consumer.createMessageStreams(topicCountMap); // 创建Streams
+
         List<KafkaStream<byte[], byte[]>> streams = consumerMap.get(topic); // 每个线程对应于一个KafkaStream
 
         // now launch all the threads
@@ -68,7 +69,6 @@ public class HighLevelConsumerExample {
         try {
             Thread.sleep(100000);
         } catch (InterruptedException ie) {
-
         }
         example.shutdown();
     }

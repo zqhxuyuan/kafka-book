@@ -12,7 +12,7 @@ case class Operation[A](partitions: List[A], name: String) {
 
 object CrossReference {
 
-  def main(args: Array[String]) {
+  def basicCross(): Unit ={
     val operation1: List[Int] = List(1,2,3,4,5)
     val operation2: List[Int] = List(1,3,5,6,7)
 
@@ -33,6 +33,11 @@ object CrossReference {
       println(key + "==>" + opeartion.mkString(","))
     }
     println("------------------------")
+  }
+
+  def main(args: Array[String]) {
+    val operation1: List[Int] = List(1,2,3,4,5)
+    val operation2: List[Int] = List(1,3,5,6,7)
 
     //demo kafka purgatory data structure
     val purgatory = new Purgatory[Int]
@@ -40,7 +45,10 @@ object CrossReference {
     purgatory.watch(Operation(operation2, "operation2"))
     purgatory.print()
 
-    purgatory.removeKey(1)
+    //purgatory.removeKey(1)
+    //purgatory.print()
+
+    purgatory.remove(Operation(operation1, "operation1"))
     purgatory.print()
   }
 }
@@ -62,6 +70,20 @@ class Purgatory[A] {
 
   def removeKey(key: A): Unit ={
     watchers.remove(key)
+  }
+  //删除Watcher集合中, 包含指定Operation的所有元素
+  def remove(operation: Operation[A]) = {
+    for(ele <- watchers) {
+      val list = ele._2
+      if(list.contains(operation)) {
+        val newList = (list.toBuffer - operation).toList
+        if(newList.size == 0){
+          watchers.remove(ele._1)
+        }else{
+          watchers += ele._1 -> newList
+        }
+      }
+    }
   }
 
   def checkAndComplete(key: A): Unit ={

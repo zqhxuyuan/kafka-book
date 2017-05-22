@@ -3,11 +3,8 @@ package base.concurrent;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
-import java.util.concurrent.DelayQueue;
-import java.util.concurrent.Delayed;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
+
 import static java.util.concurrent.TimeUnit.*;
 
 /**
@@ -55,13 +52,16 @@ class DelayedTask implements Runnable, Delayed {
 
     public static class EndSentinel extends DelayedTask {
         private ExecutorService exec;
-        public EndSentinel(int delay, ExecutorService exec) {
+        CountDownLatch shutdownLatch = null;
+        public EndSentinel(int delay, ExecutorService exec, CountDownLatch shutdownLatch) {
             super(delay);
             this.exec = exec;
+            this.shutdownLatch = shutdownLatch;
         }
         @Override
         public void run() {
             System.out.println(this + " calling shutDownNow()");
+            shutdownLatch.countDown();
             exec.shutdownNow();
         }
     }
@@ -87,17 +87,24 @@ class DelayedTaskConsumer implements Runnable {
 
 
 public class DelayQueueDemo {
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Exception{
+        long start = System.currentTimeMillis();
+        CountDownLatch shutdownLatch = new CountDownLatch(1);
+
         int maxDelayTime = 5000;//milliseconds
         Random random = new Random(47);
         ExecutorService exec = Executors.newCachedThreadPool();
         DelayQueue<DelayedTask> queue = new DelayQueue<>();
         //填充10个休眠时间随机的任务
-        for (int i = 0; i < 10; i++) {
+        for (int i = 0; i < 10000; i++) {
             queue.put(new DelayedTask(random.nextInt(maxDelayTime)));
         }
         //设置结束的时候。
-        queue.add(new DelayedTask.EndSentinel(maxDelayTime, exec));
+        queue.add(new DelayedTask.EndSentinel(maxDelayTime, exec, shutdownLatch));
         exec.execute(new DelayedTaskConsumer(queue));
+
+        shutdownLatch.await();
+        long end = System.currentTimeMillis();
+        System.out.println("cost:" + (end-start));
     }
 }

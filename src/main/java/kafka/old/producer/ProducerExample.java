@@ -14,14 +14,15 @@ import java.util.Random;
 public class ProducerExample {
 
     public static void main(String[] args) {
-        long events = 10;
+        long events = 100;
         Random rnd = new Random();
 
         // First define properties for how the Producer finds the cluster,
         // serializes the messages and if appropriate directs the message to a specific Partition.
         Properties props = new Properties();
+        props.put("metadata.broker.list", "localhost:9092");
         // 单机多服务模拟集群
-        props.put("metadata.broker.list", "localhost:9092,localhost:9093,localhost:9094");
+        //props.put("metadata.broker.list", "localhost:9092,localhost:9093,localhost:9094");
         props.put("serializer.class", "kafka.serializer.StringEncoder");
         props.put("partitioner.class", "kafka.old.producer.SimplePartitioner");
         props.put("request.required.acks", "1");
@@ -36,11 +37,11 @@ public class ProducerExample {
             // Now build your message
             long runtime = new Date().getTime();
             String ip = "192.168.2." + rnd.nextInt(255);
-            String msg = runtime + ",www.example.com," + ip;
+            String msg = nEvents + ":" + runtime + ",www.example.com," + ip;
 
             // Finally write the message to the Broker
             // passing the IP as the partition key
-            KeyedMessage<String, String> data = new KeyedMessage<String, String>("my-replicated-topic", ip, msg);
+            KeyedMessage<String, String> data = new KeyedMessage<String, String>("test", ip, msg);
             producer.send(data);
         }
         producer.close();
