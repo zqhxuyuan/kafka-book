@@ -19,7 +19,7 @@ start program
 ```
 ➜  git clone https://github.com/zqhxuyuan/kafka-book.git
 ➜  cd kafka-book
-➜  mvn clean compile exec:java -Dexec.mainClass="kafka.newapi.examples.KafkaProducerConsumerDemo"
+➜  mvn clean compile exec:java -Dexec.mainClass="KafkaProducerConsumerDemo"
 ```
 
 ## NIO
