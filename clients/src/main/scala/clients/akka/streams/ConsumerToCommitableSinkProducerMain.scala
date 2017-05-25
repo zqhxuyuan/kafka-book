@@ -1,4 +1,4 @@
-package clients.akka
+package clients.akka.streams
 
 import akka.actor.ActorSystem
 import akka.kafka.ConsumerMessage.CommittableOffsetBatch

@@ -7,17 +7,17 @@
     <groupId>com.github.zqhxuyuan</groupId>
     <artifactId>kafka-book</artifactId>
     <version>1.0-SNAPSHOT</version>
+    <packaging>pom</packaging>
 
-    <repositories>
-        <repository>
-            <id>confluent</id>
-            <url>http://packages.confluent.io/maven/</url>
-        </repository>
-        <repository>
-            <id>spring-repo</id>
-            <url>http://repo.spring.io/milestone</url>
-        </repository>
-    </repositories>
+    <modules>
+        <module>kafka</module>
+        <module>clients</module>
+        <module>mqs</module>
+        <module>spark</module>
+        <module>storm</module>
+        <module>flink</module>
+        <module>beam</module>
+    </modules>
 
     <properties>
         <scala.version>2.11.7</scala.version>
@@ -26,12 +26,6 @@
         <rocketmq.version>3.2.6</rocketmq.version>
         <avro.version>1.7.7</avro.version>
         <confluent.version>3.0.1</confluent.version>
-
-        <!--
-        <elasticsearch.version>2.2.1</elasticsearch.version>
-        <spark.version>1.6.2</spark.version>
-        <storm.kafka.version>1.0.1</storm.kafka.version>
-        -->
 
         <spark.version>2.1.1</spark.version>
         <flink.version>1.2.1</flink.version>
@@ -65,17 +59,6 @@
         </dependency>
 
         <dependency>
-            <groupId>io.confluent</groupId>
-            <artifactId>kafka-avro-serializer</artifactId>
-            <version>${confluent.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>io.confluent</groupId>
-            <artifactId>kafka-schema-registry-client</artifactId>
-            <version>${confluent.version}</version>
-        </dependency>
-
-        <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
             <version>1.7.7</version>
@@ -95,33 +78,9 @@
             <artifactId>commons-collections</artifactId>
             <version>3.2.1</version>
         </dependency>
-        <dependency>
-            <groupId>org.apache.avro</groupId>
-            <artifactId>avro</artifactId>
-            <version>${avro.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.avro</groupId>
-            <artifactId>avro-maven-plugin</artifactId>
-            <version>${avro.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.avro</groupId>
-            <artifactId>avro-compiler</artifactId>
-            <version>${avro.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.avro</groupId>
-            <artifactId>avro-ipc</artifactId>
-            <version>${avro.version}</version>
-        </dependency>
+
 
         <!--基础知识的依赖包-->
-        <dependency>
-            <groupId>com.lmax</groupId>
-            <artifactId>disruptor</artifactId>
-            <version>3.3.2</version>
-        </dependency>
         <dependency>
             <groupId>com.h2database</groupId>
             <artifactId>h2</artifactId>
@@ -131,36 +90,6 @@
             <groupId>org.schwering</groupId>
             <artifactId>irclib</artifactId>
             <version>1.10</version>
-        </dependency>
-        <dependency>
-            <groupId>io.netty</groupId>
-            <artifactId>netty-all</artifactId>
-            <version>4.0.36.Final</version>
-        </dependency>
-
-
-        <!--客户端-->
-        <dependency>
-            <groupId>org.springframework.kafka</groupId>
-            <artifactId>spring-kafka</artifactId>
-            <version>1.2.1.RELEASE</version>
-        </dependency>
-
-        <dependency>
-            <groupId>com.typesafe.akka</groupId>
-            <artifactId>akka-stream-kafka_2.11</artifactId>
-            <version>0.16</version>
-        </dependency>
-
-        <dependency>
-            <groupId>io.projectreactor</groupId>
-            <artifactId>reactor-core</artifactId>
-            <version>3.1.0.M1</version>
-        </dependency>
-        <dependency>
-            <groupId>io.projectreactor.kafka</groupId>
-            <artifactId>reactor-kafka</artifactId>
-            <version>1.0.0.M2</version>
         </dependency>
 
         <!--第三方库-->
@@ -177,115 +106,11 @@
             <version>${elasticsearch.version}</version>
         </dependency>
         -->
-
-        <!--其他消息系统-->
-        <!--
-        <dependency>
-            <groupId>com.alibaba.rocketmq</groupId>
-            <artifactId>rocketmq-all</artifactId>
-            <version>${rocketmq.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.alibaba.rocketmq</groupId>
-            <artifactId>rocketmq-client</artifactId>
-            <version>${rocketmq.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>com.taobao.metamorphosis</groupId>
-            <artifactId>metamorphosis-client</artifactId>
-            <version>1.4.6.2</version>
-        </dependency>
-
-        <dependency>
-            <groupId>com.rabbitmq</groupId>
-            <artifactId>amqp-client</artifactId>
-            <version>3.6.1</version>
-        </dependency>
-
-        <dependency>
-            <groupId>com.alibaba.otter</groupId>
-            <artifactId>canal.client</artifactId>
-            <version>1.0.21</version>
-        </dependency>
-        -->
-
-        <!--集成大数据生态系统-->
-        <dependency>
-            <groupId>org.apache.spark</groupId>
-            <artifactId>spark-core_${scalaBin.version}</artifactId>
-            <version>${spark.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.spark</groupId>
-            <artifactId>spark-sql_${scalaBin.version}</artifactId>
-            <version>${spark.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.spark</groupId>
-            <artifactId>spark-streaming_${scalaBin.version}</artifactId>
-            <version>${spark.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.spark</groupId>
-            <artifactId>spark-streaming-kafka-0-8_${scalaBin.version}</artifactId>
-            <version>${spark.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.spark</groupId>
-            <artifactId>spark-streaming-kafka-0-10_${scalaBin.version}</artifactId>
-            <version>${spark.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.apache.flink</groupId>
-            <artifactId>flink-core</artifactId>
-            <version>${flink.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.flink</groupId>
-            <artifactId>flink-scala_${scalaBin.version}</artifactId>
-            <version>${flink.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.flink</groupId>
-            <artifactId>flink-clients_${scalaBin.version}</artifactId>
-            <version>${flink.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.flink</groupId>
-            <artifactId>flink-streaming-scala_${scalaBin.version}</artifactId>
-            <version>${flink.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.flink</groupId>
-            <artifactId>flink-connector-kafka-0.8_${scalaBin.version}</artifactId>
-            <version>${flink.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.flink</groupId>
-            <artifactId>flink-connector-kafka-0.10_${scalaBin.version}</artifactId>
-            <version>${flink.version}</version>
-        </dependency>
-
-        <!--
-        <dependency>
-            <groupId>org.apache.storm</groupId>
-            <artifactId>storm-kafka</artifactId>
-            <version>${storm.kafka.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.storm</groupId>
-            <artifactId>storm-core</artifactId>
-            <version>${storm.kafka.version}</version>
-        </dependency>
-        -->
-
     </dependencies>
 
     <build>
-        <sourceDirectory>src/main/scala</sourceDirectory>
         <!--
+        <sourceDirectory>src/main/scala</sourceDirectory>
         <resources>
             <resource>
                 <directory>${basedir}/src/main/resources</directory>
@@ -293,28 +118,6 @@
         </resources>
         -->
         <plugins>
-            <plugin>
-                <groupId>org.apache.avro</groupId>
-                <artifactId>avro-maven-plugin</artifactId>
-                <version>1.7.7</version>
-                <executions>
-                    <execution>
-                        <phase>generate-sources</phase>
-                        <goals>
-                            <goal>schema</goal>
-                            <goal>protocol</goal>
-                            <goal>idl-protocol</goal>
-                        </goals>
-                        <!--
-                        <configuration>
-                            <sourceDirectory>${project.basedir}/src/main/avro/</sourceDirectory>
-                            <outputDirectory>${project.basedir}/src/main/java/avro</outputDirectory>
-                        </configuration>
-                        -->
-                    </execution>
-                </executions>
-            </plugin>
-
             <plugin>
                 <groupId>net.alchim31.maven</groupId>
                 <artifactId>scala-maven-plugin</artifactId>
@@ -328,6 +131,8 @@
                     </execution>
                 </executions>
                 <configuration>
+                    <mainSourceDir>src/main/scala</mainSourceDir>
+                    <testSourceDir>src/test/scala</testSourceDir>
                     <scalaVersion>${scala.version}</scalaVersion>
                 </configuration>
             </plugin>

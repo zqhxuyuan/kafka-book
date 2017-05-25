@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>com.github.zqhxuyuan</groupId>
+        <artifactId>kafka-book</artifactId>
+        <version>1.0-SNAPSHOT</version>
+    </parent>
+
+    <groupId>com.github.zqhxuyuan</groupId>
+    <artifactId>clients</artifactId>
+    <version>1.0-SNAPSHOT</version>
+
+    <repositories>
+        <repository>
+            <id>spring-repo</id>
+            <url>http://repo.spring.io/milestone</url>
+        </repository>
+        <repository>
+            <id>cake</id>
+            <name>https://bintray.com/cakesolutions/maven</name>
+            <url>http://dl.bintray.com/cakesolutions/maven</url>
+        </repository>
+    </repositories>
+
+    <dependencies>
+        <dependency>
+            <groupId>com.lmax</groupId>
+            <artifactId>disruptor</artifactId>
+            <version>3.3.2</version>
+        </dependency>
+
+        <dependency>
+            <groupId>io.netty</groupId>
+            <artifactId>netty-all</artifactId>
+            <version>4.0.36.Final</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.kafka</groupId>
+            <artifactId>spring-kafka</artifactId>
+            <version>1.2.1.RELEASE</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.typesafe.akka</groupId>
+            <artifactId>akka-stream-kafka_2.11</artifactId>
+            <version>0.16</version>
+        </dependency>
+
+        <dependency>
+            <groupId>io.projectreactor</groupId>
+            <artifactId>reactor-core</artifactId>
+            <version>3.1.0.M1</version>
+        </dependency>
+        <dependency>
+            <groupId>io.projectreactor.kafka</groupId>
+            <artifactId>reactor-kafka</artifactId>
+            <version>1.0.0.M2</version>
+        </dependency>
+
+        <!--
+        <dependency>
+            <groupId>net.cakesolutions</groupId>
+            <artifactId>scala-kafka-client_${scalaBin.version}</artifactId>
+            <version>0.10.2.1</version>
+            <type>pom</type>
+        </dependency>
+        <dependency>
+            <groupId>net.cakesolutions</groupId>
+            <artifactId>scala-kafka-client-akka_${scalaBin.version}</artifactId>
+            <version>0.10.2.1</version>
+            <type>pom</type>
+        </dependency>
+        -->
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>net.alchim31.maven</groupId>
+                <artifactId>scala-maven-plugin</artifactId>
+                <version>3.2.0</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>compile</goal>
+                            <goal>testCompile</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <mainSourceDir>src/main/scala</mainSourceDir>
+                    <testSourceDir>src/test/scala</testSourceDir>
+                    <scalaVersion>${scala.version}</scalaVersion>
+                </configuration>
+            </plugin>
+            <plugin>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.1</version>
+                <configuration>
+                    <source>1.8</source>
+                    <target>1.8</target>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+</project>
