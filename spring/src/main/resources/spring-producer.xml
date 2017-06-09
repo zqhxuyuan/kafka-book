@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:int="http://www.springframework.org/schema/integration"
+       xmlns:int-kafka="http://www.springframework.org/schema/integration/kafka"
+       xmlns:task="http://www.springframework.org/schema/task"
+       xsi:schemaLocation="http://www.springframework.org/schema/integration/kafka http://www.springframework.org/schema/integration/kafka/spring-integration-kafka.xsd
+        http://www.springframework.org/schema/integration http://www.springframework.org/schema/integration/spring-integration-4.2.xsd
+        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
+    <context:property-placeholder location="classpath:*.properties" />
+
+    <int:channel id="inputToKafka"></int:channel>
+
+    <int-kafka:outbound-channel-adapter
+            kafka-template="kafkaTemplate"
+            channel="inputToKafka"
+            topic="${spring.topic}"/>
+
+    <bean id="kafkaTemplate" class="org.springframework.kafka.core.KafkaTemplate">
+        <constructor-arg index="0" ref="producerFactory"></constructor-arg>
+    </bean>
+
+    <bean id="producerFactory" class="org.springframework.kafka.core.DefaultKafkaProducerFactory">
+        <constructor-arg>
+            <map>
+                <entry key="bootstrap.servers" value="${broker.address}"/>
+                <entry key="key.serializer" value="org.apache.kafka.common.serialization.StringSerializer"></entry>
+                <entry key="value.serializer" value="org.apache.kafka.common.serialization.StringSerializer"></entry>
+            </map>
+        </constructor-arg>
+    </bean>
+</beans>
