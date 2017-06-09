@@ -17,6 +17,7 @@
         <module>storm</module>
         <module>flink</module>
         <module>beam</module>
+        <module>spring</module>
     </modules>
 
     <properties>

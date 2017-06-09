@@ -39,11 +39,13 @@
             <version>4.0.36.Final</version>
         </dependency>
 
+        <!--
         <dependency>
             <groupId>org.springframework.kafka</groupId>
             <artifactId>spring-kafka</artifactId>
             <version>1.2.1.RELEASE</version>
         </dependency>
+        -->
 
         <dependency>
             <groupId>com.typesafe.akka</groupId>
@@ -60,6 +62,12 @@
             <groupId>io.projectreactor.kafka</groupId>
             <artifactId>reactor-kafka</artifactId>
             <version>1.0.0.M2</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.rocksdb</groupId>
+            <artifactId>rocksdbjni</artifactId>
+            <version>4.4.1</version>
         </dependency>
 
         <!--

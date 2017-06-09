@@ -56,9 +56,12 @@ object KafkaWordCount {
     val topicMap = topics.split(",").map((_, numThreads.toInt)).toMap
     val lines = KafkaUtils.createStream(ssc, zkQuorum, group, topicMap).map(_._2)
     val words = lines.flatMap(_.split(" "))
-    val wordCounts = words.map(x => (x, 1L))
-      .reduceByKeyAndWindow(_ + _, _ - _, Minutes(10), Seconds(2), 2)
+
+    val wordCounts = words.map(x => (x, 1L)).reduceByKey(_ + _)
     wordCounts.print()
+
+    val wordCountsWindow = words.map(x => (x, 1L)).reduceByKeyAndWindow(_ + _, _ - _, Minutes(10), Seconds(2), 2)
+    wordCountsWindow.print()
 
     ssc.start()
     ssc.awaitTermination()

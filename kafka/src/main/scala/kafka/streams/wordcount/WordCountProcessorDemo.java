@@ -58,7 +58,7 @@ public class WordCountProcessorDemo {
                 @SuppressWarnings("unchecked")
                 public void init(ProcessorContext context) {
                     this.context = context;
-                    this.context.schedule(1000);
+                    this.context.schedule(10000);
                     this.kvStore = (KeyValueStore<String, Integer>) context.getStateStore("Counts");
                 }
 
@@ -106,30 +106,32 @@ public class WordCountProcessorDemo {
 
     public static void main(String[] args) throws Exception {
         Properties props = new Properties();
-        props.put(StreamsConfig.APPLICATION_ID_CONFIG, "streams-wordcount-processor1");
+        props.put(StreamsConfig.APPLICATION_ID_CONFIG, "streams-wc");
         props.put(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092");
         props.put(StreamsConfig.ZOOKEEPER_CONNECT_CONFIG, "localhost:2181");
         props.put(StreamsConfig.KEY_SERDE_CLASS_CONFIG, Serdes.String().getClass());
         props.put(StreamsConfig.VALUE_SERDE_CLASS_CONFIG, Serdes.String().getClass());
+        props.put(StreamsConfig.NUM_STREAM_THREADS_CONFIG, 1);
+        props.put(StreamsConfig.NUM_STANDBY_REPLICAS_CONFIG, 1);
 
         // setting offset reset to earliest so that we can re-run the demo code with the same pre-loaded data
         props.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
 
         TopologyBuilder builder = new TopologyBuilder();
 
-        builder.addSource("Source", "streams-file-input");
+        builder.addSource("Source", "streams-input");
 
         builder.addProcessor("Process", new MyProcessorSupplier(), "Source");
-        builder.addStateStore(Stores.create("Counts").withStringKeys().withIntegerValues().inMemory().build(), "Process");
+        builder.addStateStore(Stores.create("Counts").withStringKeys().withIntegerValues().persistent().build(), "Process");
 
-        builder.addSink("Sink", "streams-wordcount-output1", "Process");
+        builder.addSink("Sink", "streams-output1", "Process");
 
         KafkaStreams streams = new KafkaStreams(builder, props);
         streams.start();
 
         // usually the stream application would be running forever,
         // in this example we just let it run for some time and stop since the input data is finite.
-        Thread.sleep(60000*5L);
+        Thread.sleep(60000*15L);
 
         streams.close();
     }

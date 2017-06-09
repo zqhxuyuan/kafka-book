@@ -3,10 +3,8 @@ package org.apache.storm;
 import org.apache.storm.spout.SpoutOutputCollector;
 import org.apache.storm.task.OutputCollector;
 import org.apache.storm.task.TopologyContext;
-import org.apache.storm.topology.BasicOutputCollector;
 import org.apache.storm.topology.OutputFieldsDeclarer;
 import org.apache.storm.topology.TopologyBuilder;
-import org.apache.storm.topology.base.BaseBasicBolt;
 import org.apache.storm.topology.base.BaseRichBolt;
 import org.apache.storm.topology.base.BaseRichSpout;
 import org.apache.storm.tuple.Fields;
@@ -18,7 +16,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
 
-public class WordCountTopologySimple {
+public class WordCountTopologyNoAck {
 
     public static class RandomSentenceSpout extends BaseRichSpout {
         SpoutOutputCollector collector;
@@ -40,7 +38,7 @@ public class WordCountTopologySimple {
         public void nextTuple() {
             Utils.sleep(1000);
             String sentence = sentences[rand.nextInt(sentences.length)];
-            System.out.println("\n" + sentence);
+            System.out.println("Spout发送数据:" + sentence);
             this.collector.emit(new Values(sentence));
         }
 
@@ -48,8 +46,6 @@ public class WordCountTopologySimple {
         public void declareOutputFields(OutputFieldsDeclarer declarer) {
             declarer.declare(new Fields("sentence"));
         }
-        public void ack(Object id) {}
-        public void fail(Object id) {}
     }
 
     public static class SplitSentenceBolt extends BaseRichBolt {
@@ -67,7 +63,6 @@ public class WordCountTopologySimple {
             for (String word : words) {
                 this.collector.emit(new Values(word));
             }
-            this.collector.ack(tuple);
         }
 
         @Override
@@ -110,7 +105,7 @@ public class WordCountTopologySimple {
         public void execute(Tuple tuple) {
             String first = tuple.getString(0);
             int second = tuple.getInteger(1);
-            System.out.println(first + "," + second);
+            System.out.println("Printer统计数据:" + first + "," + second);
         }
         @Override
         public void declareOutputFields(OutputFieldsDeclarer ofd) {}
