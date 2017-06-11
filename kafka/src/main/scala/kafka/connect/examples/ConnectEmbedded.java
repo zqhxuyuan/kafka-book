@@ -20,7 +20,9 @@ package kafka.connect.examples;
 import org.apache.kafka.common.utils.SystemTime;
 import org.apache.kafka.common.utils.Time;
 import org.apache.kafka.common.utils.Utils;
+import org.apache.kafka.connect.connector.Connector;
 import org.apache.kafka.connect.runtime.ConnectorConfig;
+import org.apache.kafka.connect.runtime.ConnectorFactory;
 import org.apache.kafka.connect.runtime.Herder;
 import org.apache.kafka.connect.runtime.Worker;
 import org.apache.kafka.connect.runtime.distributed.DistributedConfig;
@@ -65,7 +67,8 @@ public class ConnectEmbedded {
 
         //not sure if this is going to work but because we don't have advertised url we can get at least a fairly random
         String workerId = UUID.randomUUID().toString();
-        worker = new Worker(workerId, time, config, offsetBackingStore);
+        // TODO ConnectorFactory after 0.10.0.0
+        worker = new Worker(workerId, time, new ConnectorFactory(), config, offsetBackingStore);
 
         StatusBackingStore statusBackingStore = new KafkaStatusBackingStore(time, worker.getInternalValueConverter());
         statusBackingStore.configure(config);

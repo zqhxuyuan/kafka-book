@@ -143,7 +143,8 @@ public class WikipediaStreamDemo {
 
         KTable<String, Long> totalEditsByUser = wikipediaParsed
                 .filter((key, value) -> value.type == WikipediaMessage.Type.EDIT)
-                .countByKey(Serdes.String(), "wikipedia-edits-by-user");
+                //.countByKey(Serdes.String(), "wikipedia-edits-by-user");
+                .groupByKey().count("wikipedia-edits-by-user");
 
         //some print
         totalEditsByUser.toStream().process(() -> new AbstractProcessor<String, Long>() {
