@@ -39,6 +39,26 @@
 - [kafka-eagle](<https://github.com/smartloli/kafka-eagle>)
 - [Burrow - Kafka Consumer Lag Checking](<https://github.com/linkedin/Burrow>)
 
+## Who Use & Contribute to Kafka
+
+- [Confluent](<https://github.com/confluentinc>)
+- [LinkedIn](<https://github.com/linkedin?utf8=%E2%9C%93&q=kafka&type=&language=>)
+- [Uber](<https://github.com/uber?utf8=%E2%9C%93&q=kafka&type=&language=>)
+- [Datamountaineer](<https://github.com/datamountaineer>)
+
+## OpenSource MQ
+
+- [Pulsar - distributed pub-sub messaging system](<https://github.com/yahoo/pulsar>)
+- [hermes - Ctrip asynchronous message queue solution](<https://github.com/taotaoideas/hermes>)
+
+
+## Based On Kafka
+
+- [Hermes - Fast and reliable message broker](<https://github.com/allegro/hermes>)
+- [kafka-metrics: Real-time aggregation of metrics](<https://github.com/amient/kafka-metrics>)
+- [Oryx 2: Lambda architecture](<https://github.com/OryxProject/oryx>)
+- [Seldon](<https://github.com/SeldonIO/seldon-server>)
+
 ---
 
 ## Project Code In This Repository
