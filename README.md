@@ -27,6 +27,12 @@
 - [Samza Papers](<https://cwiki.apache.org/confluence/pages/viewpage.action?pageId=51812876>)
 - [Confluent Resources](<https://www.confluent.io/resources/>)
 
+## Wiki
+
+- [Kafka Improvement Proposals](<https://cwiki.apache.org/confluence/display/KAFKA/Kafka+Improvement+Proposals>)
+- [Samza Enhancement Proposal](<https://cwiki.apache.org/confluence/display/SAMZA/Samza+Enhancement+Proposal>)
+- [Flink Improvement Proposals](<https://cwiki.apache.org/confluence/display/FLINK/Flink+Improvement+Proposals>)
+
 ## Monitor
 
 - [kafka-manager](<https://github.com/yahoo/kafka-manager>)
