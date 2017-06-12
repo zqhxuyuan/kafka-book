@@ -18,7 +18,7 @@ import java.util.concurrent.TimeUnit;
  */
 public class StreamStatefulDemo extends TestCase{
     static KStreamBuilder builder = new KStreamBuilder();
-    KStream<String, String> sentenceStream = builder.stream(Serdes.String(), Serdes.String(), "input-topic");
+    KStream<String, String> stream = builder.stream(Serdes.String(), Serdes.String(), "input-topic");
 
     @Override
     protected void setUp() throws Exception {
@@ -31,7 +31,7 @@ public class StreamStatefulDemo extends TestCase{
     }
 
     public void testWordcount() {
-        KStream<String, Long> wordCounts = sentenceStream
+        KTable<String, Long> wordCounts = stream
                 // Split each text line, by whitespace, into words.  The text lines are the record
                 // values, i.e. we can ignore whatever data is in the record keys and thus invoke
                 // `flatMapValues` instead of the more generic `flatMap`.
@@ -44,11 +44,9 @@ public class StreamStatefulDemo extends TestCase{
                 // `KTable<String, Long>` (word -> count).  We must provide a name for
                 // the resulting KTable, which will be used to name e.g. its associated
                 // state store and changelog topic.
-                .count("Counts")
-                // Convert the `KTable<String, Long>` into a `KStream<String, Long>`.
-                .toStream();
+                .count("Counts");
 
-        wordCounts = sentenceStream
+        wordCounts = stream
                 .flatMapValues(new ValueMapper<String, Iterable<String>>() {
                     @Override
                     public Iterable<String> apply(String value) {
@@ -60,21 +58,22 @@ public class StreamStatefulDemo extends TestCase{
                     public String apply(String key, String word) {
                         return word;
                     }
-                }).count("Counts")
-                .toStream();
-
+                }).count("Counts");
 
         // 实现wordcount的其他几种方式
         // groupBy((key, word) -> word) 等价于
         // 1. map((key,word) -> KeyValue.pair(word,word)).groupByKey()
         // 2. selectKey((key,word) -> word).groupByKey()
-        wordCounts = sentenceStream.flatMapValues(value -> Arrays.asList(value.split("")))
+        wordCounts = stream.flatMapValues(value -> Arrays.asList(value.split("")))
                 .map((key,word) -> KeyValue.pair(word,word))
-                .groupByKey().count("Counts").toStream();
+                .groupByKey().count("Counts");
 
-        wordCounts = sentenceStream.flatMapValues(value -> Arrays.asList(value.split("")))
+        wordCounts = stream.flatMapValues(value -> Arrays.asList(value.split("")))
                 .selectKey((key,word) -> word)
-                .groupByKey().count("Counts").toStream();
+                .groupByKey().count("Counts");
+
+        // Convert the `KTable<String, Long>` into a `KStream<String, Long>`.
+        KStream<String, Long> wordCountStream = wordCounts.toStream();
     }
 
     public void testAggregate() {
@@ -348,5 +347,143 @@ public class StreamStatefulDemo extends TestCase{
                 },
                 SessionWindows.with(TimeUnit.MINUTES.toMillis(5)), /* session window */
                 "sessionized-reduced-stream-store" /* state store name */);
+    }
+
+    /**
+     *
+     * For stream-stream joins it’s important to highlight that
+     * a new input record on one side will produce a join output for each matching record on the other side,
+     * and there can be multiple such matching records in a given join window
+     *
+     * INNER JOIN(join), LEFT JOIN(leftJoin), RIGHT JOIN(outerJoin) both has this feature:
+     *
+     * The join is key-based, i.e. with the join predicate leftRecord.key == rightRecord.key,
+     * and window-based, i.e. two input records are joined if and only if their timestamps
+     * are “close” to each other as defined by the user-supplied JoinWindows,
+     * i.e. the window defines an additional join predicate over the record timestamps.
+     *
+     * The join will be triggered under the conditions listed below whenever new input is received.
+     * When it is triggered, the user-supplied ValueJoiner will be called to produce join output records.
+     *
+     * Input records with a null key or a null value are ignored and do not trigger the join.
+     *
+     * -- FOR LEFT JOIN
+     *
+     * For each input record on the left side that does not have any match on the right side,
+     * the ValueJoiner will be called with ValueJoiner#apply(leftRecord.value, null)
+     *
+     * -- FOR RIGHT JOIN
+     *
+     * For each input record on one side that does not have any match on the other side,
+     * the ValueJoiner will be called with ValueJoiner#apply(leftRecord.value, null) or ValueJoiner#apply(null, rightRecord.value)
+     */
+    public void testStreamJoin() {
+        KStream<String, Long> left = builder.stream(Serdes.String(), Serdes.Long(), "input-join-topic1");;
+        KStream<String, Double> right = builder.stream(Serdes.String(), Serdes.Double(), "input-join-topic2");;
+
+        KStream<String, String> joined = left.join(right,
+                (leftValue, rightValue) -> "left=" + leftValue + ", right=" + rightValue, /* ValueJoiner */
+                JoinWindows.of(TimeUnit.MINUTES.toMillis(5)),
+                Serdes.String(), /* key */
+                Serdes.Long(),   /* left value */
+                Serdes.Double()  /* right value */
+        );
+
+        joined = left.join(right,
+                new ValueJoiner<Long, Double, String>() {
+                    @Override
+                    public String apply(Long leftValue, Double rightValue) {
+                        return "left=" + leftValue + ", right=" + rightValue;
+                    }
+                },
+                JoinWindows.of(TimeUnit.MINUTES.toMillis(5)),
+                Serdes.String(), /* key */
+                Serdes.Long(),   /* left value */
+                Serdes.Double()  /* right value */
+        );
+    }
+
+    /**
+     * INNER JOIN
+     *
+     * Input records with a null key are ignored and do not trigger the join.
+     * Input records with a null value are interpreted as tombstones for the corresponding key,
+     * which indicate the deletion of the key from the table.
+     * Tombstones do not trigger the join.
+     * When an input tombstone is received, then an output tombstone is forwarded directly to the join result KTable if required
+     * (i.e. only if the corresponding key actually exists already in the join result KTable).
+     */
+    public void testTableJoin() {
+        KTable<String, Long> left = builder.table(Serdes.String(), Serdes.Long(), "input-join-topic1", "store-1");
+        KTable<String, Double> right = builder.table(Serdes.String(), Serdes.Double(), "input-join-topic2", "store-2");
+
+        KTable<String, String> joined = left.join(right,
+                (leftValue, rightValue) -> "left=" + leftValue + ", right=" + rightValue /* ValueJoiner */
+        );
+
+        joined = left.join(right,
+                new ValueJoiner<Long, Double, String>() {
+                    @Override
+                    public String apply(Long leftValue, Double rightValue) {
+                        return "left=" + leftValue + ", right=" + rightValue;
+                    }
+                });
+    }
+
+    /**
+     * perform table lookups against a KTable (changelog stream) upon receiving a new record from the KStream (record stream)
+     *
+     * Only input records for the left side (stream) trigger the join.
+     * Input records for the right side (table) update only the internal right-side join state.
+     *
+     * Input records for the stream with a null key or a null value are ignored and do not trigger the join.
+     *
+     * Input records for the table with a null value are interpreted as tombstones for the corresponding key,
+     * which indicate the deletion of the key from the table. Tombstones do not trigger the join.
+     */
+    public void testStreamTableJoin() {
+        KStream<String, Long> left = builder.stream(Serdes.String(), Serdes.Long(), "input-join-topic1");;
+        KTable<String, Double> right = builder.table(Serdes.String(), Serdes.Double(), "input-join-topic2", "store-2");
+
+        KStream<String, String> joined = left.join(right,
+                (leftValue, rightValue) -> "left=" + leftValue + ", right=" + rightValue, /* ValueJoiner */
+                Serdes.String(), /* key */
+                Serdes.Long()    /* left value */
+        );
+
+        joined = left.join(right,
+                new ValueJoiner<Long, Double, String>() {
+                    @Override
+                    public String apply(Long leftValue, Double rightValue) {
+                        return "left=" + leftValue + ", right=" + rightValue;
+                    }
+                },
+                Serdes.String(), /* key */
+                Serdes.Long()    /* left value */
+        );
+    }
+
+    public void testStreamGlobalTableJoin() {
+        KStream<String, Long> left = builder.stream(Serdes.String(), Serdes.Long(), "input-join-topic1");;
+        GlobalKTable<Integer, Double> right = builder.globalTable(Serdes.Integer(), Serdes.Double(), "input-join-topic2", "store-2");;
+
+        KStream<String, String> joined = left.join(right,
+                (leftKey, leftValue) -> leftKey.length(), /* derive a (potentially) new key by which to lookup against the table */
+                (leftValue, rightValue) -> "left=" + leftValue + ", right=" + rightValue /* ValueJoiner */
+        );
+
+        joined = left.join(right,
+                new KeyValueMapper<String, Long, Integer>() { /* derive a (potentially) new key by which to lookup against the table */
+                    @Override
+                    public Integer apply(String key, Long value) {
+                        return key.length();
+                    }
+                },
+                new ValueJoiner<Long, Double, String>() {
+                    @Override
+                    public String apply(Long leftValue, Double rightValue) {
+                        return "left=" + leftValue + ", right=" + rightValue;
+                    }
+                });
     }
 }

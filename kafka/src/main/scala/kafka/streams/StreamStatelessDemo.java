@@ -12,7 +12,7 @@ import java.util.*;
 /**
  * Created by zhengqh on 17/6/10.
  *
- * https://kafka.apache.org/0102/javadoc/index.html
+ * https://kafka.apache.org/0102/javadoc/index.html [this version has sample code]
  * http://docs.confluent.io/current/streams/developer-guide.html#writing-a-kafka-streams-application
  */
 public class StreamStatelessDemo {
@@ -63,7 +63,10 @@ public class StreamStatelessDemo {
 
     public void filter() {
         // A filter that selects (keeps) only positive numbers
+        // JAVA 8
         KStream<String, Long> onlyPositives = wordCountStream.filter((key, value) -> value > 0);
+
+        // JAVA 7
         onlyPositives = wordCountStream.filter(
                 new Predicate<String, Long>() {
                     @Override
@@ -74,6 +77,7 @@ public class StreamStatelessDemo {
 
         // An inverse filter that discards any negative numbers or zero
         onlyPositives = wordCountStream.filterNot((key, value) -> value <= 0);
+
         onlyPositives = wordCountStream.filterNot(
                 new Predicate<String, Long>() {
                     @Override
@@ -83,9 +87,11 @@ public class StreamStatelessDemo {
                 });
     }
 
+    // side effect
     public void foreach() {
         // Print the contents of the KStream to the local console.
         wordCountStream.foreach((key, value) -> System.out.println(key + " => " + value));
+
         wordCountStream.foreach(
                 new ForeachAction<String, Long>() {
                     @Override
@@ -95,6 +101,7 @@ public class StreamStatelessDemo {
                 });
 
         wordCountStream.print();
+        // 自定义输出类型
         sentenceStream.print(Serdes.ByteArray(), Serdes.String());
 
         wordCountStream.writeAsText("/path/to/local/output.txt");
@@ -102,6 +109,7 @@ public class StreamStatelessDemo {
 
     }
 
+    // through or to
     public void pipe() {
         builder.stream("streams-file-input").to("streams-pipe-output");
 
@@ -133,17 +141,21 @@ public class StreamStatelessDemo {
     // input record <K,V> can be transformed into an output record <K':V'>
     //The example below normalizes the String key to upper-case letters and counts the number of token of the value string.
     public void map() {
-        KStream<String, String> inputStream = builder.stream("topic");
-        KStream<String, Integer> outputStream = inputStream.map(new KeyValueMapper<String, String, KeyValue<String, Integer>>() {
+        // String, Long -> Long, String
+        KStream<Long, String> countWord = wordCountStream.map(new KeyValueMapper<String, Long, KeyValue<Long, String>>() {
             @Override
-            public KeyValue<String, Integer> apply(String key, String value) {
-                return new KeyValue<>(key.toUpperCase(), value.split(" ").length);
+            public KeyValue<Long, String> apply(String key, Long value) {
+                return new KeyValue<>(value, key);
             }
         });
 
-        KStream<String, Integer> mapTransformed = sentenceStream.map(
+        countWord = wordCountStream.map((key,value) -> KeyValue.pair(value, key));
+
+        // byte[], String -> String, Integer
+        KStream<String, Integer> wordLength = sentenceStream.map(
                 (key, value) -> KeyValue.pair(value.toLowerCase(), value.length()));
-        mapTransformed = sentenceStream.map(
+
+        wordLength = sentenceStream.map(
                 new KeyValueMapper<byte[], String, KeyValue<String, Integer>>() {
                     @Override
                     public KeyValue<String, Integer> apply(byte[] key, String value) {
@@ -228,13 +240,12 @@ public class StreamStatelessDemo {
 
     public void groupByKStream() {
         //Groups the records by a new key, which may be of a different key type.
-        //When grouping a table, you may also specify a new value and value type.
-        //groupBy is a shorthand for selectKey(...).groupByKey()
         // Group the stream by a new key
         KGroupedStream<String, String> groupedStream = sentenceStream.groupBy(
                 // Input: byte[], String. Output: String, String
                 (key, value) -> value, Serdes.String(), Serdes.String()
         );
+
         groupedStream = sentenceStream.groupBy(
                 new KeyValueMapper<byte[], String, String>() {
                     @Override
@@ -244,6 +255,8 @@ public class StreamStatelessDemo {
                 },Serdes.String(), Serdes.String());
     }
 
+    //When grouping a table, you may also specify a new value and value type.
+    //groupBy is a shorthand for selectKey(...).groupByKey()
     public void groupByKTable() {
         // Group the table by a new key and key type, and also modify the value and value type.
         KTable<byte[], String> sentenceTable = builder.table(Serdes.ByteArray(), Serdes.String(), "word-counts-input-topic", "word-counts-partitioned-store");
@@ -252,6 +265,7 @@ public class StreamStatelessDemo {
                 // Input: byte[], String. Output: String, Integer
                 (key, value) -> KeyValue.pair(value, value.length()), Serdes.String(), Serdes.Integer()
         );
+
         groupedTable = sentenceTable.groupBy(
                 new KeyValueMapper<byte[], String, KeyValue<String, Integer>>() {
                     @Override
