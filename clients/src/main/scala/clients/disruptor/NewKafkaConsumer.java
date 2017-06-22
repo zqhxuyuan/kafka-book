@@ -1,10 +1,11 @@
 package clients.disruptor;
 
-import com.google.common.collect.Lists;
 import com.lmax.disruptor.BusySpinWaitStrategy;
 import com.lmax.disruptor.dsl.ProducerType;
 import org.apache.kafka.common.serialization.StringDeserializer;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -39,7 +40,7 @@ public class NewKafkaConsumer {
 
 
         kafkaDisruptor.getDisruptor().handleEventsWith(new DisruptorEventHandler());
-        kafkaDisruptor.getKafkaConsumer().subscribe(Lists.newArrayList("test1"));
+        kafkaDisruptor.getKafkaConsumer().subscribe(Collections.singletonList("topic1"));
 
         KafkaDisruptorRunnable<String, String> kafkaDisruptorRunnable = new KafkaDisruptorRunnable<>(kafkaDisruptor);
 

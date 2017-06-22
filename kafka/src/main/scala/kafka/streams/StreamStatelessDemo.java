@@ -176,6 +176,7 @@ public class StreamStatelessDemo {
         });
 
         KStream<byte[], String> uppercased = sentenceStream.mapValues(value -> value.toUpperCase());
+
         uppercased = sentenceStream.mapValues(
                 new ValueMapper<String, String>() {
                     @Override

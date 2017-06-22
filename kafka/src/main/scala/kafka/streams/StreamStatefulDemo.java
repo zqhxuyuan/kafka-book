@@ -1,6 +1,5 @@
 package kafka.streams;
 
-import junit.framework.TestCase;
 import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.streams.KeyValue;
 import org.apache.kafka.streams.kstream.*;
@@ -16,19 +15,9 @@ import java.util.concurrent.TimeUnit;
  * For example, in aggregating operations, a windowing state store is used to store the latest aggregation results per window;
  * in join operations, a windowing state store is used to store all the records received so far within the defined window boundary.
  */
-public class StreamStatefulDemo extends TestCase{
+public class StreamStatefulDemo {
     static KStreamBuilder builder = new KStreamBuilder();
     KStream<String, String> stream = builder.stream(Serdes.String(), Serdes.String(), "input-topic");
-
-    @Override
-    protected void setUp() throws Exception {
-        super.setUp();
-    }
-
-    @Override
-    protected void tearDown() throws Exception {
-        super.tearDown();
-    }
 
     public void testWordcount() {
         KTable<String, Long> wordCounts = stream
@@ -74,6 +63,48 @@ public class StreamStatefulDemo extends TestCase{
 
         // Convert the `KTable<String, Long>` into a `KStream<String, Long>`.
         KStream<String, Long> wordCountStream = wordCounts.toStream();
+    }
+
+    public void testWCStepByStep() {
+        // 句子流
+        KStream<byte[], String> sentences = builder.stream(
+                Serdes.ByteArray(), Serdes.String(), "sentence-topic");
+
+        // 将句子转成一个个单词
+        KStream<byte[], String> words = sentences.flatMapValues(
+                value -> Arrays.asList(value.split("\\s+")));
+
+        // 输出到新的主题, 单词流
+        words.to("word-input");
+
+        // 转换成小写
+        KStream<byte[], String> lowerWords = words.mapValues(
+                value -> value.toLowerCase());
+
+        // 对键值进行转换, 更改值的类型
+        KStream<String, Integer> _words2 = lowerWords.map(
+                (key, value) -> KeyValue.pair(value, value.length()));
+
+        // 根据键分组
+        KGroupedStream<String, String> groups = lowerWords.groupBy((key,word) -> word);
+        groups = lowerWords.groupBy((key,word) -> word);
+        groups = lowerWords.map((key,word) -> KeyValue.pair(word, word)).groupByKey();
+        groups = lowerWords.selectKey((key,word) -> word).groupByKey();
+
+        // 对分组流(KGroupedStream)的每个单词进行计数
+        KTable<String, Long> counts = groups.count("Counts1");
+
+        // 对表进行过滤
+        KTable<String, Long> filter = counts.filter((key,value) -> value > 2);
+
+        // 构造表
+        KTable<byte[], String> table = builder.table(
+                Serdes.ByteArray(), Serdes.String(), "word-input", "wc-store");
+
+        // 对分组表(KGroupedTable)进行单词计数
+        counts = table.mapValues(value -> value.toLowerCase())
+                .groupBy((key,value) -> KeyValue.pair(value, value))
+                .count("Counts2");
     }
 
     public void testAggregate() {

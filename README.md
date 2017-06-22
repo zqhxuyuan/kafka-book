@@ -45,6 +45,7 @@
 - [LinkedIn](<https://github.com/linkedin?utf8=%E2%9C%93&q=kafka&type=&language=>)
 - [Uber](<https://github.com/uber?utf8=%E2%9C%93&q=kafka&type=&language=>)
 - [Datamountaineer](<https://github.com/datamountaineer>)
+- [Landoop](<https://github.com/Landoop>)
 
 ## OpenSource MQ
 
