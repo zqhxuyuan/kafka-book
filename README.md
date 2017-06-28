@@ -82,7 +82,7 @@
 ### applications
 
 - [x] [kafkastreams-cep](<https://github.com/fhussonnois/kafkastreams-cep>)
-- [ ] [kafka-streams-drools](<https://github.com/benwatson528/kafka-streams-drools>)
+- [x] [kafka-streams-drools](<https://github.com/benwatson528/kafka-streams-drools>)
 - [ ] [siddhi-kafka-cep](<https://github.com/sbcd90/siddhi-kafka-cep>)
 
 ### bigdata
