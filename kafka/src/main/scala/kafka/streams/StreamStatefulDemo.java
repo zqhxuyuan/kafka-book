@@ -414,7 +414,8 @@ public class StreamStatefulDemo {
 
         KStream<String, String> joined = left.join(right,
                 (leftValue, rightValue) -> "left=" + leftValue + ", right=" + rightValue, /* ValueJoiner */
-                JoinWindows.of(TimeUnit.MINUTES.toMillis(5)),
+                //JoinWindows.of(TimeUnit.MINUTES.toMillis(5)),
+                JoinWindows.of(TimeUnit.MINUTES.toMillis(5)).before(10*1000).after(5*1000),
                 Serdes.String(), /* key */
                 Serdes.Long(),   /* left value */
                 Serdes.Double()  /* right value */
