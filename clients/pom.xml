@@ -28,6 +28,17 @@
 
     <dependencies>
         <dependency>
+            <groupId>org.clapper</groupId>
+            <artifactId>grizzled-slf4j_2.11</artifactId>
+            <version>1.0.2</version>
+        </dependency>
+        <dependency>
+            <groupId>com.github.jsendnsca</groupId>
+            <artifactId>jsendnsca</artifactId>
+            <version>2.1.1</version>
+        </dependency>
+
+        <dependency>
             <groupId>com.lmax</groupId>
             <artifactId>disruptor</artifactId>
             <version>3.3.2</version>
@@ -90,6 +101,8 @@
             <type>pom</type>
         </dependency>
         -->
+
+
     </dependencies>
 
     <build>

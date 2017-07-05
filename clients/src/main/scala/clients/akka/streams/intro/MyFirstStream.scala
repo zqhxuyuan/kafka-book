@@ -7,7 +7,8 @@ import akka.stream.scaladsl._
 
 import scala.concurrent.Future
 import scala.util.{Failure, Success}
-
+import scala.concurrent._
+import ExecutionContext.Implicits.global
 
 /**
   * Created by zhengqh on 17/6/26.

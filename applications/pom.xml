@@ -19,6 +19,7 @@
         <module>kafka-streams-drools</module>
         <module>kafkastreams-cep</module>
         <module>siddhi-kafka-cep</module>
+        <module>kafka-streams-plumber</module>
     </modules>
     
 </project>
