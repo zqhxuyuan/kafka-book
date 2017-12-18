@@ -6,39 +6,33 @@
 
     <parent>
         <groupId>com.github.zqhxuyuan</groupId>
-        <artifactId>kafka-book</artifactId>
+        <artifactId>mqs</artifactId>
         <version>1.0-SNAPSHOT</version>
     </parent>
 
     <groupId>com.github.zqhxuyuan</groupId>
-    <artifactId>storm</artifactId>
+    <artifactId>rabbitmq</artifactId>
     <version>1.0-SNAPSHOT</version>
-
-    <properties>
-        <storm.kafka.version>1.0.1</storm.kafka.version>
-    </properties>
 
     <dependencies>
         <dependency>
-            <groupId>org.apache.storm</groupId>
-            <artifactId>storm-core</artifactId>
-            <version>${storm.kafka.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.apache.storm</groupId>
-            <artifactId>storm-kafka</artifactId>
-            <version>${storm.kafka.version}</version>
+            <groupId>com.rabbitmq</groupId>
+            <artifactId>amqp-client</artifactId>
+            <version>4.0.0</version>
         </dependency>
     </dependencies>
 
     <build>
         <plugins>
             <plugin>
+                <artifactId>maven-assembly-plugin</artifactId>
+            </plugin>
+            <plugin>
                 <artifactId>maven-compiler-plugin</artifactId>
             </plugin>
             <plugin>
-                <artifactId>maven-assembly-plugin</artifactId>
+                <groupId>net.alchim31.maven</groupId>
+                <artifactId>scala-maven-plugin</artifactId>
             </plugin>
         </plugins>
     </build>

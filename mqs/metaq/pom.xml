@@ -6,18 +6,19 @@
 
     <parent>
         <groupId>com.github.zqhxuyuan</groupId>
-        <artifactId>kafka-book</artifactId>
+        <artifactId>mqs</artifactId>
         <version>1.0-SNAPSHOT</version>
     </parent>
 
     <groupId>com.github.zqhxuyuan</groupId>
-    <artifactId>mqs</artifactId>
+    <artifactId>metaq</artifactId>
     <version>1.0-SNAPSHOT</version>
-    <packaging>pom</packaging>
 
-    <modules>
-        <module>rocketmq</module>
-        <module>rabbitmq</module>
-        <module>metaq</module>
-    </modules>
+    <dependencies>
+        <dependency>
+            <groupId>com.taobao.metamorphosis</groupId>
+            <artifactId>metamorphosis-client</artifactId>
+            <version>1.4.6.2</version>
+        </dependency>
+    </dependencies>
 </project>
