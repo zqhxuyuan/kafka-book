@@ -64,6 +64,8 @@
 
 ## Project Code In This Repository
 
+first run `mvn compile` on root repository
+
 ### kafka examples
 
 - [x] kafka consumer
