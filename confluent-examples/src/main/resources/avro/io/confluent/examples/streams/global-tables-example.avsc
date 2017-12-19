@@ -1,0 +1,43 @@
+[
+    {"namespace": "io.confluent.examples.streams.avro",
+     "type": "record",
+     "name": "Order",
+     "fields": [
+         {"name": "customer_id", "type": "long"},
+         {"name": "product_id", "type": "long"},
+         {"name": "time_order_placed_at", "type": "long"}
+     ]
+    },
+
+    {"namespace": "io.confluent.examples.streams.avro",
+     "type": "record",
+     "name": "Customer",
+     "fields": [
+         {"name": "name", "type": "string"},
+         {"name": "gender", "type": "string"},
+         {"name": "region", "type": "string"}
+     ]
+    },
+
+    {"namespace": "io.confluent.examples.streams.avro",
+     "type": "record",
+     "name": "Product",
+     "fields": [
+         {"name": "name", "type": "string"},
+         {"name": "description", "type": "string"},
+         {"name": "supplier_name", "type": "string"}
+     ]
+    },
+
+    {"namespace": "io.confluent.examples.streams.avro",
+     "type": "record",
+     "name": "EnrichedOrder",
+     "fields": [
+         {"name": "product",  "type": "io.confluent.examples.streams.avro.Product"},
+         {"name": "customer", "type": "io.confluent.examples.streams.avro.Customer"},
+         {"name": "order", "type": "io.confluent.examples.streams.avro.Order"}
+     ]
+    }
+]
+
+

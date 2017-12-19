@@ -29,6 +29,7 @@
             <groupId>org.apache.rocketmq</groupId>
             <artifactId>rocketmq-all</artifactId>
             <version>${rocketmq.version}</version>
+            <type>pom</type>
         </dependency>
 
         <dependency>

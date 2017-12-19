@@ -17,7 +17,7 @@
         <module>storm</module>
         <module>flink</module>
         <module>beam</module>
-        <module>spring</module>
+        <!--<module>spring</module>-->
         <module>confluent-examples</module>
         <module>applications</module>
     </modules>

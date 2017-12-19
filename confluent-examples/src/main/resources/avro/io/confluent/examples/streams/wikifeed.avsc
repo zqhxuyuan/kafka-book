@@ -1,0 +1,9 @@
+{"namespace": "io.confluent.examples.streams.avro",
+ "type": "record",
+ "name": "WikiFeed",
+ "fields": [
+     {"name": "user", "type": "string"},
+     {"name": "is_new", "type": "boolean"},
+     {"name": "content", "type": ["string", "null"]}
+ ]
+}

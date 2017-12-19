@@ -1,0 +1,11 @@
+{"namespace": "io.confluent.examples.streams.avro",
+ "type": "record",
+ "name": "Song",
+ "fields": [
+     {"name": "id",     "type": "long"},
+     {"name": "album",  "type": "string"},
+     {"name": "artist", "type": "string"},
+     {"name": "name",   "type": "string"},
+     {"name": "genre",  "type": "string"}
+ ]
+}
